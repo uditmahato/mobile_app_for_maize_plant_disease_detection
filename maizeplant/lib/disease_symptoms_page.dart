@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'treatments_page.dart';
 
 class DiseaseSymptomsPage extends StatelessWidget {

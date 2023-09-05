@@ -1,7 +1,10 @@
 import 'dart:io';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:http/http.dart' as http;
+
 import 'display_image_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -11,14 +14,23 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   File? _image;
+  String? _prediction;
+  double? _confidenceLevel;
   bool _isModelReady = false;
 
   @override
   void initState() {
     super.initState();
-    // Code to initialize the model, if required.
-    _isModelReady =
-        true; // For demonstration purposes, setting it to true immediately.
+    loadModel().then((_) {
+      setState(() {
+        _isModelReady = true;
+        print('Model is ready.');
+      });
+    });
+  }
+
+  Future<void> loadModel() async {
+    // Load the model here if needed
   }
 
   Future<void> _pickImage(ImageSource source) async {
@@ -34,17 +46,47 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  void _navigateToDisplayImagePage(String prediction, double confidenceLevel) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => DisplayImagePage(
-          image: _image!,
-          prediction: prediction,
-          confidenceLevel: confidenceLevel,
-        ),
-      ),
-    );
+  Future<void> _runModelOnImage() async {
+    if (_isModelReady && _image != null) {
+      try {
+        var request = http.MultipartRequest(
+          'POST',
+          Uri.parse('http://localhost:8000/predict'),
+        );
+
+        request.files
+            .add(await http.MultipartFile.fromPath('file', _image!.path));
+
+        var response = await request.send();
+        var result = await response.stream.bytesToString();
+        var jsonResult = json.decode(result);
+        var prediction = jsonResult['prediction'] as String;
+        var confidenceLevel = jsonResult['confidence_level'] as double;
+
+        setState(() {
+          _prediction = prediction;
+          _confidenceLevel = confidenceLevel * 100;
+        });
+
+        print('Model inference successful.');
+
+        // ignore: use_build_context_synchronously
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DisplayImagePage(
+              image: File(_image!.path),
+              prediction: _prediction!,
+              confidenceLevel: _confidenceLevel!,
+            ),
+          ),
+        );
+      } catch (e) {
+        print('Failed to run model: $e');
+      }
+    } else {
+      print('Model is not ready or image is null.');
+    }
   }
 
   @override
@@ -65,18 +107,7 @@ class _HomePageState extends State<HomePage> {
             ),
             SizedBox(height: 10.0),
             ElevatedButton(
-              onPressed: () {
-                if (_isModelReady && _image != null) {
-                  // Call your model inference function here
-                  String prediction =
-                      "Blight"; // Replace with actual prediction
-                  double confidenceLevel =
-                      0.85; // Replace with actual confidence level
-                  _navigateToDisplayImagePage(prediction, confidenceLevel);
-                } else {
-                  print('Cannot predict. Model or image is not ready.');
-                }
-              },
+              onPressed: _runModelOnImage,
               child: Text('Predict Disease'),
             ),
           ],
@@ -85,3 +116,42 @@ class _HomePageState extends State<HomePage> {
     );
   }
 }
+
+// class DisplayImagePage extends StatelessWidget {
+//   final File image;
+//   final String prediction;
+//   final double confidenceLevel;
+
+//   const DisplayImagePage({
+//     required this.image,
+//     required this.prediction,
+//     required this.confidenceLevel,
+//   });
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: Text('Image Display'),
+//       ),
+//       body: Center(
+//         child: Column(
+//           mainAxisAlignment: MainAxisAlignment.center,
+//           children: [
+//             Image.file(image),
+//             SizedBox(height: 20.0),
+//             Text(
+//               'Predicted Class: $prediction',
+//               style: TextStyle(fontSize: 18.0),
+//             ),
+//             SizedBox(height: 10.0),
+//             Text(
+//               'Confidence Level: ${confidenceLevel.toStringAsFixed(4)} %',
+//               style: TextStyle(fontSize: 18.0),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
