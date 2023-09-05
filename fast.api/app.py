@@ -7,12 +7,15 @@ from PIL import Image
 import cv2
 from keras.models import load_model
 import warnings
+from fastapi.middleware.cors import CORSMiddleware
+
 warnings.filterwarnings("ignore")
 
 model = load_model('model.h5')
 
 # Name of Classes
 target_names = ["Blight","Common_Rust","Gray_Leaf_Spot","Healthy"]
+
 
 app = FastAPI(
     title="Plant Disease Detection API",
@@ -21,6 +24,13 @@ app = FastAPI(
     debug=True,
 )
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allows all origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all methods
+    allow_headers=["*"],  # Allows all headers
+)
 
 @app.get("/", response_class=PlainTextResponse)
 async def running():
@@ -46,8 +56,9 @@ async def root(file: UploadFile = File(...)):
         The prediction and confidence level of the model in json format
     """
 
-    contents = io.BytesIO(await file.read())
-    file_bytes = np.asarray(bytearray(contents.read()), dtype=np.uint8)
+    #contents = io.BytesIO(await file.read())
+    #file_bytes = np.asarray(bytearray(contents.read()), dtype=np.uint8)
+    file_bytes = np.asarray(bytearray(await file.read()), dtype=np.uint8)
     img = cv2.imdecode(file_bytes, 1)
     
     # Resize the image to 256x256

@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:typed_data';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -13,49 +13,43 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  File? _image;
+  Uint8List? _imageData;
   String? _prediction;
   double? _confidenceLevel;
-  bool _isModelReady = false;
-
-  @override
-  void initState() {
-    super.initState();
-    loadModel().then((_) {
-      setState(() {
-        _isModelReady = true;
-        print('Model is ready.');
-      });
-    });
-  }
-
-  Future<void> loadModel() async {
-    // Load the model here if needed
-  }
+  bool _isModelReady = true; // Set to true since loadModel is not used
+  bool _isLoading =
+      false; // To show a loading indicator during image processing
 
   Future<void> _pickImage(ImageSource source) async {
     try {
       final pickedImage = await ImagePicker().pickImage(source: source);
       if (pickedImage == null) return;
+      final imageData = await pickedImage.readAsBytes();
       setState(() {
-        _image = File(pickedImage.path);
+        _imageData = imageData;
       });
       print('Image picked successfully.');
     } catch (e) {
       print('Failed to pick and process image: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to pick and process image: $e')),
+      );
     }
   }
 
   Future<void> _runModelOnImage() async {
-    if (_isModelReady && _image != null) {
+    if (_isModelReady && _imageData != null) {
+      setState(() {
+        _isLoading = true;
+      });
       try {
         var request = http.MultipartRequest(
           'POST',
           Uri.parse('http://localhost:8000/predict'),
         );
 
-        request.files
-            .add(await http.MultipartFile.fromPath('file', _image!.path));
+        request.files.add(http.MultipartFile.fromBytes('file', _imageData!,
+            filename: 'image.jpg'));
 
         var response = await request.send();
         var result = await response.stream.bytesToString();
@@ -66,26 +60,35 @@ class _HomePageState extends State<HomePage> {
         setState(() {
           _prediction = prediction;
           _confidenceLevel = confidenceLevel * 100;
+          _isLoading = false;
         });
 
         print('Model inference successful.');
 
-        // ignore: use_build_context_synchronously
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => DisplayImagePage(
-              image: File(_image!.path),
+              imageData: _imageData!,
               prediction: _prediction!,
               confidenceLevel: _confidenceLevel!,
             ),
           ),
         );
       } catch (e) {
+        setState(() {
+          _isLoading = false;
+        });
         print('Failed to run model: $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to run model: $e')),
+        );
       }
     } else {
       print('Model is not ready or image is null.');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Model is not ready or image is null.')),
+      );
     }
   }
 
@@ -99,7 +102,8 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            if (_image != null) Image.file(_image!),
+            if (_isLoading) CircularProgressIndicator(),
+            if (_imageData != null) Image.memory(_imageData!),
             SizedBox(height: 10.0),
             ElevatedButton(
               onPressed: () => _pickImage(ImageSource.gallery),
@@ -116,42 +120,3 @@ class _HomePageState extends State<HomePage> {
     );
   }
 }
-
-// class DisplayImagePage extends StatelessWidget {
-//   final File image;
-//   final String prediction;
-//   final double confidenceLevel;
-
-//   const DisplayImagePage({
-//     required this.image,
-//     required this.prediction,
-//     required this.confidenceLevel,
-//   });
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text('Image Display'),
-//       ),
-//       body: Center(
-//         child: Column(
-//           mainAxisAlignment: MainAxisAlignment.center,
-//           children: [
-//             Image.file(image),
-//             SizedBox(height: 20.0),
-//             Text(
-//               'Predicted Class: $prediction',
-//               style: TextStyle(fontSize: 18.0),
-//             ),
-//             SizedBox(height: 10.0),
-//             Text(
-//               'Confidence Level: ${confidenceLevel.toStringAsFixed(4)} %',
-//               style: TextStyle(fontSize: 18.0),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
