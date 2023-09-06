@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:maizeplant/generate_pdf.dart';
 import 'package:maizeplant/home_page.dart';
 
 class DisplayImagePage extends StatefulWidget {
@@ -87,6 +88,18 @@ class _DisplayImagePageState extends State<DisplayImagePage> {
                 });
               },
               child: Text('Show Treatments'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                await GeneratePdfPage.generatePdf(
+                  imageData: widget.imageData,
+                  prediction: widget.prediction,
+                  confidenceLevel: widget.confidenceLevel,
+                  symptoms: _getSymptoms(widget.prediction),
+                  treatments: _getTreatments(widget.prediction),
+                );
+              },
+              child: Text('Generate PDF'),
             ),
             if (_showTreatments)
               Text(
