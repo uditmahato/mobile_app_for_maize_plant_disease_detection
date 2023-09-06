@@ -2,6 +2,7 @@ import 'dart:typed_data';
 import 'dart:convert';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
@@ -17,11 +18,32 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   Stream<User?> userStream = FirebaseAuth.instance.authStateChanges();
   User? _user;
+  String? _fullName; // Declare a variable to store the full name
 
   @override
   void initState() {
     super.initState();
-    _user = FirebaseAuth.instance.currentUser;
+    userStream.listen((user) {
+      setState(() {
+        _user = user;
+        _fetchFullName(); // Fetch the full name when user data is updated
+      });
+    });
+  }
+
+  Future<void> _fetchFullName() async {
+    if (_user != null) {
+      DatabaseReference userRef =
+          FirebaseDatabase.instance.ref().child('users').child(_user!.uid);
+      DataSnapshot snapshot = await userRef.get();
+
+      if (snapshot.value != null) {
+        Map<String, dynamic> userData = snapshot.value as Map<String, dynamic>;
+        setState(() {
+          _fullName = userData['full_name'];
+        });
+      }
+    }
   }
 
   Uint8List? _imageData;
@@ -114,6 +136,7 @@ class _HomePageState extends State<HomePage> {
               await FirebaseAuth.instance.signOut();
               Navigator.of(context).pop();
             },
+            tooltip: 'Logout',
           ),
         ],
       ),
@@ -121,7 +144,7 @@ class _HomePageState extends State<HomePage> {
         child: ListView(
           children: [
             UserAccountsDrawerHeader(
-              accountName: Text(_user?.displayName ?? 'Guest'),
+              accountName: Text(_fullName ?? 'Guest'),
               accountEmail: Text(_user?.email ?? 'No Email'),
               currentAccountPicture: CircleAvatar(
                 backgroundImage: _user?.photoURL != null
