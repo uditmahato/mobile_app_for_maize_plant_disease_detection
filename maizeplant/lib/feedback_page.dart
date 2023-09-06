@@ -18,37 +18,63 @@ class _FeedbackPageState extends State<FeedbackPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Feedback Page'),
+        title: Text('Feedback Page', style: TextStyle(color: Colors.white)),
+        backgroundColor:
+            Color.fromARGB(255, 7, 107, 35), // Greenery color palette
       ),
-      body: Column(
-        children: [
-          TextField(
-            controller: _feedbackController,
-            decoration: InputDecoration(
-              labelText: 'Add Feedback',
-              suffixIcon: IconButton(
-                icon: Icon(Icons.send),
-                onPressed: () {
-                  _addFeedbackToDatabase(
-                      _feedbackController.text); // Add feedback to the database
-                  setState(() {
-                    _feedbackController.clear();
-                  });
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            TextField(
+              controller: _feedbackController,
+              decoration: InputDecoration(
+                labelText: 'Add Feedback',
+                labelStyle: TextStyle(fontSize: 18.0),
+                border: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Color.fromARGB(
+                        255, 7, 107, 35), // Setting the border color
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Color.fromARGB(
+                        255, 7, 107, 35), // Setting the focused border color
+                  ),
+                ),
+                focusColor: Color.fromARGB(255, 7, 107, 35),
+                suffixIcon: IconButton(
+                  icon: Icon(Icons.send,
+                      color: Color.fromARGB(
+                          255, 4, 110, 48)), // Greenery color palette
+                  onPressed: () {
+                    _addFeedbackToDatabase(_feedbackController
+                        .text); // Add feedback to the database
+                    setState(() {
+                      _feedbackController.clear();
+                    });
+                  },
+                ),
+              ),
+            ),
+            SizedBox(height: 20.0),
+            Expanded(
+              child: ListView.builder(
+                itemCount: _feedbackList.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    title: Text(_feedbackList[index],
+                        style: TextStyle(fontSize: 16.0)),
+                    leading: Icon(Icons.feedback,
+                        color: Color.fromARGB(
+                            255, 4, 110, 48)), // Greenery color palette
+                  );
                 },
               ),
             ),
-          ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: _feedbackList.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(_feedbackList[index]),
-                );
-              },
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

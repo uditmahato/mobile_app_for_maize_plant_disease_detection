@@ -35,3 +35,12 @@ flutter:
   assets:
     - lib/ml/model.tflite
     - lib/ml/labels.txt
+    - assets/cover.png
+    - assets/cover_2.png
+    - assets/login.png
+    - assets/Maize.png
+    - assets/sign_up.png
+  fonts:
+    - family: Lobster
+      fonts:
+        - asset: assets/fonts/LobsterTwo-Regular.ttf

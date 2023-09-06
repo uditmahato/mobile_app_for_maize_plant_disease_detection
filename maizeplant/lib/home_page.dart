@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:maizeplant/feedback_page.dart';
+import 'package:maizeplant/login_page.dart';
 
 import 'display_image_page.dart';
 
@@ -18,7 +19,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   Stream<User?> userStream = FirebaseAuth.instance.authStateChanges();
   User? _user;
-  String? _fullName; // Declare a variable to store the full name
+  String? _fullName;
 
   @override
   void initState() {
@@ -26,7 +27,7 @@ class _HomePageState extends State<HomePage> {
     userStream.listen((user) {
       setState(() {
         _user = user;
-        _fetchFullName(); // Fetch the full name when user data is updated
+        _fetchFullName();
       });
     });
   }
@@ -128,13 +129,21 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Maize Plant Disease Detection'),
+        title: Text(
+          'Maize Plant Disease Detection',
+          style: TextStyle(fontSize: 26.0, color: Colors.white),
+        ),
+        backgroundColor: Color.fromARGB(255, 7, 107, 35),
+        elevation: 0,
         actions: [
           IconButton(
-            icon: Icon(Icons.logout),
+            icon: Icon(Icons.logout, color: Colors.white),
             onPressed: () async {
               await FirebaseAuth.instance.signOut();
-              Navigator.of(context).pop();
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (context) => LoginPage()),
+              );
+              // Redirect to login page
             },
             tooltip: 'Logout',
           ),
@@ -144,9 +153,19 @@ class _HomePageState extends State<HomePage> {
         child: ListView(
           children: [
             UserAccountsDrawerHeader(
-              accountName: Text(_fullName ?? 'Guest'),
-              accountEmail: Text(_user?.email ?? 'No Email'),
+              decoration: BoxDecoration(
+                color: Color.fromARGB(255, 7, 107, 35),
+              ),
+              accountName: Text(
+                _fullName ?? 'Guest',
+                style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+              ),
+              accountEmail: Text(
+                _user?.email ?? 'No Email',
+                style: TextStyle(fontSize: 18.0),
+              ),
               currentAccountPicture: CircleAvatar(
+                radius: 50.0,
                 backgroundImage: _user?.photoURL != null
                     ? NetworkImage(_user!.photoURL!)
                     : NetworkImage(
@@ -155,7 +174,31 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             ListTile(
-              title: Text('Feedback'),
+              title: Text(
+                'Welcome to Maize Plant Disease Detection App',
+                style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+              ),
+            ),
+            Divider(),
+            ListTile(
+              title: Text(
+                'About the App',
+                style: TextStyle(fontSize: 16.0),
+              ),
+              subtitle: Text(
+                'This app helps in detecting diseases in maize plants using image recognition technology. Simply upload an image of the maize plant, and the app will predict the disease with a confidence level.',
+                style: TextStyle(fontSize: 14.0),
+              ),
+              onTap: () {
+                // You can navigate to an 'About' page with more information about the app here
+              },
+            ),
+            Divider(),
+            ListTile(
+              title: Text(
+                'Feedback',
+                style: TextStyle(fontSize: 16.0),
+              ),
               onTap: () {
                 Navigator.of(context).pop();
                 Navigator.push(context,
@@ -165,23 +208,62 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (_isLoading) CircularProgressIndicator(),
-            if (_imageData != null) Image.memory(_imageData!),
-            SizedBox(height: 10.0),
-            ElevatedButton(
-              onPressed: () => _pickImage(ImageSource.gallery),
-              child: Text('Pick Image'),
-            ),
-            SizedBox(height: 10.0),
-            ElevatedButton(
-              onPressed: _runModelOnImage,
-              child: Text('Predict Disease'),
-            ),
-          ],
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/cover.png'),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (_isLoading)
+                CircularProgressIndicator(
+                  color: Colors.white,
+                ),
+              if (_imageData != null)
+                Image.memory(
+                  _imageData!,
+                  frameBuilder: (BuildContext context, Widget child, int? frame,
+                      bool wasSynchronouslyLoaded) {
+                    if (wasSynchronouslyLoaded) {
+                      return child;
+                    }
+                    return AnimatedOpacity(
+                      child: child,
+                      opacity: frame == null ? 0 : 1,
+                      duration: const Duration(seconds: 1),
+                      curve: Curves.easeOut,
+                    );
+                  },
+                ),
+              SizedBox(height: 10.0),
+              ElevatedButton(
+                onPressed: () => _pickImage(ImageSource.gallery),
+                child: Text('Pick Image', style: TextStyle(fontSize: 20.0)),
+                style: ElevatedButton.styleFrom(
+                  primary: Colors.blue,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
+              ),
+              SizedBox(height: 10.0),
+              ElevatedButton(
+                onPressed: _runModelOnImage,
+                child:
+                    Text('Predict Disease', style: TextStyle(fontSize: 20.0)),
+                style: ElevatedButton.styleFrom(
+                  primary: Colors.green,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
