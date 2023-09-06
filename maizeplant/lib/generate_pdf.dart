@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+// ignore: avoid_web_libraries_in_flutter
 import 'dart:html' as html;
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -51,13 +52,13 @@ class GeneratePdfPage {
                 ),
                 pw.SizedBox(height: 30),
                 pw.Text(
-                  'Symptoms\n: $symptoms',
+                  'Symptoms: \n$symptoms',
                   style: pw.TextStyle(fontSize: 16),
                   textAlign: pw.TextAlign.center,
                 ),
                 pw.SizedBox(height: 30),
                 pw.Text(
-                  'Treatments\n: $treatments',
+                  'Treatments: \n$treatments',
                   style: pw.TextStyle(fontSize: 16),
                   textAlign: pw.TextAlign.center,
                 ),

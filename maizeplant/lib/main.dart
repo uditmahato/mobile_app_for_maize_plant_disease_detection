@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use, prefer_const_constructors
+
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:maizeplant/login_page.dart';
@@ -22,13 +24,6 @@ void main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // Delayed navigation to login page
-    Future.delayed(Duration(seconds: 2), () {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => LoginPage()),
-      );
-    });
-
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Maize Plant Disease Detector',
@@ -86,9 +81,8 @@ class WelcomePage extends StatelessWidget {
             SizedBox(height: 30),
             ElevatedButton(
               onPressed: () {
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (context) => LoginPage()),
-                );
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => LoginPage()));
               },
               style: ElevatedButton.styleFrom(
                 primary: Color.fromARGB(255, 7, 107, 35), // Green background

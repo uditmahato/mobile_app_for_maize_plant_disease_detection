@@ -1,6 +1,5 @@
 import 'dart:typed_data';
 import 'dart:convert';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:maizeplant/feedback_page.dart';
 import 'package:maizeplant/login_page.dart';
+import 'package:image_picker/image_picker.dart';
 
 import 'display_image_page.dart';
 
@@ -66,6 +66,24 @@ class _HomePageState extends State<HomePage> {
       print('Failed to pick and process image: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to pick and process image: $e')),
+      );
+    }
+  }
+
+  Future<void> _captureImage() async {
+    try {
+      final pickedImage =
+          await ImagePicker().pickImage(source: ImageSource.camera);
+      if (pickedImage == null) return;
+      final imageData = await pickedImage.readAsBytes();
+      setState(() {
+        _imageData = imageData;
+      });
+      print('Image captured successfully.');
+    } catch (e) {
+      print('Failed to capture and process image: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to capture and process image: $e')),
       );
     }
   }
@@ -216,55 +234,71 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
         child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              if (_isLoading)
-                CircularProgressIndicator(
-                  color: Colors.white,
-                ),
-              if (_imageData != null)
-                Image.memory(
-                  _imageData!,
-                  frameBuilder: (BuildContext context, Widget child, int? frame,
-                      bool wasSynchronouslyLoaded) {
-                    if (wasSynchronouslyLoaded) {
-                      return child;
-                    }
-                    return AnimatedOpacity(
-                      child: child,
-                      opacity: frame == null ? 0 : 1,
-                      duration: const Duration(seconds: 1),
-                      curve: Curves.easeOut,
-                    );
-                  },
-                ),
-              SizedBox(height: 10.0),
-              ElevatedButton(
-                onPressed: () => _pickImage(ImageSource.gallery),
-                child: Text('Pick Image', style: TextStyle(fontSize: 20.0)),
-                style: ElevatedButton.styleFrom(
-                  primary: Colors.blue,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
+            child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (_isLoading)
+              CircularProgressIndicator(
+                color: Colors.white,
+              ),
+            if (_imageData != null)
+              Image.memory(
+                _imageData!,
+                frameBuilder: (BuildContext context, Widget child, int? frame,
+                    bool wasSynchronouslyLoaded) {
+                  if (wasSynchronouslyLoaded) {
+                    return child;
+                  }
+                  return AnimatedOpacity(
+                    child: child,
+                    opacity: frame == null ? 0 : 1,
+                    duration: const Duration(seconds: 1),
+                    curve: Curves.easeOut,
+                  );
+                },
+              ),
+            SizedBox(height: 10.0),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                  onPressed: () => _pickImage(ImageSource.gallery),
+                  child: Text('Pick Image', style: TextStyle(fontSize: 20.0)),
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.blue,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
                   ),
                 ),
-              ),
-              SizedBox(height: 10.0),
-              ElevatedButton(
-                onPressed: _runModelOnImage,
-                child:
-                    Text('Predict Disease', style: TextStyle(fontSize: 20.0)),
-                style: ElevatedButton.styleFrom(
-                  primary: Colors.green,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
+                SizedBox(width: 10.0), // Add some spacing between buttons
+                ElevatedButton(
+                  onPressed: () =>
+                      _captureImage(), // Call the capture image function
+                  child:
+                      Text('Capture Image', style: TextStyle(fontSize: 20.0)),
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.blue,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
                   ),
                 ),
+              ],
+            ),
+            SizedBox(height: 20.0),
+            ElevatedButton(
+              onPressed: _runModelOnImage,
+              child: Text('Predict Disease', style: TextStyle(fontSize: 20.0)),
+              style: ElevatedButton.styleFrom(
+                primary: Colors.green,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
               ),
-            ],
-          ),
-        ),
+            ),
+          ],
+        )),
       ),
     );
   }
