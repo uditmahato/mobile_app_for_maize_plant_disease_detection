@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:maizeplant/login_page.dart';
 import 'home_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart'; // Make sure to create this file and define DefaultFirebaseOptions class in it
@@ -28,7 +29,7 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: '/',
       routes: {
-        '/': (context) => HomePage(),
+        '/': (context) => LoginPage(),
       },
     );
   }

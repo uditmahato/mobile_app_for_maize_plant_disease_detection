@@ -17,6 +17,8 @@ dependencies:
   tflite_flutter: ^0.10.1
   tflite_flutter_helper_plus: ^0.0.2
   firebase_core: ^2.15.1
+  firebase_auth: ^4.9.0
+  firebase_database: ^10.2.5
 
 dev_dependencies:
   flutter_test:

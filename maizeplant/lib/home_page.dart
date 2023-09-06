@@ -1,9 +1,11 @@
 import 'dart:typed_data';
 import 'dart:convert';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
+import 'package:maizeplant/feedback_page.dart';
 
 import 'display_image_page.dart';
 
@@ -13,12 +15,20 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  Stream<User?> userStream = FirebaseAuth.instance.authStateChanges();
+  User? _user;
+
+  @override
+  void initState() {
+    super.initState();
+    _user = FirebaseAuth.instance.currentUser;
+  }
+
   Uint8List? _imageData;
   String? _prediction;
   double? _confidenceLevel;
-  bool _isModelReady = true; // Set to true since loadModel is not used
-  bool _isLoading =
-      false; // To show a loading indicator during image processing
+  bool _isModelReady = true;
+  bool _isLoading = false;
 
   Future<void> _pickImage(ImageSource source) async {
     try {
@@ -97,6 +107,40 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Maize Plant Disease Detection'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.logout),
+            onPressed: () async {
+              await FirebaseAuth.instance.signOut();
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      ),
+      drawer: Drawer(
+        child: ListView(
+          children: [
+            UserAccountsDrawerHeader(
+              accountName: Text(_user?.displayName ?? 'Guest'),
+              accountEmail: Text(_user?.email ?? 'No Email'),
+              currentAccountPicture: CircleAvatar(
+                backgroundImage: _user?.photoURL != null
+                    ? NetworkImage(_user!.photoURL!)
+                    : NetworkImage(
+                        'https://static.vecteezy.com/system/resources/previews/005/153/495/original/cartoon-builder-mascot-logo-a-builder-man-character-holding-a-hat-logo-templates-for-business-identity-architecture-property-real-estate-residential-solutions-home-staging-building-engineers-vector.jpg',
+                      ),
+              ),
+            ),
+            ListTile(
+              title: Text('Feedback'),
+              onTap: () {
+                Navigator.of(context).pop();
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => FeedbackPage()));
+              },
+            ),
+          ],
+        ),
       ),
       body: Center(
         child: Column(

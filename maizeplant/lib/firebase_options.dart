@@ -55,6 +55,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '969335092916',
     projectId: 'maizeplant-1ae8a',
     authDomain: 'maizeplant-1ae8a.firebaseapp.com',
+    databaseURL: 'https://maizeplant-1ae8a-default-rtdb.firebaseio.com/',
     storageBucket: 'maizeplant-1ae8a.appspot.com',
     measurementId: 'G-QCRJR9JJ11',
   );
@@ -64,6 +65,7 @@ class DefaultFirebaseOptions {
     appId: '1:969335092916:android:529bea70763c68eb9b09e1',
     messagingSenderId: '969335092916',
     projectId: 'maizeplant-1ae8a',
+    databaseURL: 'https://maizeplant-1ae8a-default-rtdb.firebaseio.com/',
     storageBucket: 'maizeplant-1ae8a.appspot.com',
   );
 }
