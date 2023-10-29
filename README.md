@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="logo.png" alt="Maize Plant Disease Detection Logo" width="200">
+  <img src="screenshots/logo.png" alt="Maize Plant Disease Detection Logo" width="200">
 </p>
 
 # Maize Plant Disease Detection Mobile App
