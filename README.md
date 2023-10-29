@@ -33,7 +33,7 @@ A Flutter-based mobile application for Maize Plant Disease Detection using Convo
 ![Sign-up Page](screenshots/signup_page.jpg)
 ![Signup Confirmation](screenshots/signup_confirmation.jpg)
 ![Login Page](screenshots/login_page.jpg)
-![Navigation Dashboard](screenshots/navigation_dashboard.jpg)
+![Navigation Dashboard](screenshots/naviigation_dashboard.jpg)
 ![Home Page](screenshots/home_page.jpg)
 ![First Page](screenshots/first_page.jpg)
 ![Image Upload](screenshots/image_upload.jpg)
