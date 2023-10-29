@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="logo.png" alt="Maize Plant Disease Detection Logo" width="200">
+</p>
+
 # Maize Plant Disease Detection Mobile App
 
 ![Flutter](https://img.shields.io/badge/Flutter-2.0-blue)
@@ -20,11 +24,7 @@ A Flutter-based mobile application for Maize Plant Disease Detection using Convo
 
 - **Feedback to Admin:** Provide feedback to administrators to help improve the app.
 
-- **Contributors:** [Udit Mahato](github/uditmahato)
-
-- **Screenshots:** (Insert app screenshots here)
-
-- **And Much More:** Describe any other significant features or functionalities.
+- **Contributor:** Udit Mahato
 
 ## Screenshots
 
@@ -76,7 +76,7 @@ To run this Flutter application, follow these steps:
 
 You will need to configure the Firebase project with your own settings. Make sure to update the Firebase configuration files and adjust the app's Firebase settings as needed.
 
-## Contributing
+## Contributions
 
 Contributions are welcome! If you'd like to improve this project, please open an issue or submit a pull request with your changes.
 
