@@ -24,19 +24,22 @@ A Flutter-based mobile application for Maize Plant Disease Detection using Convo
 
 - **Feedback to Admin:** Provide feedback to administrators to help improve the app.
 
-- **Contributor:** Udit Mahato
+- **Contributor:** [Your Name]
+
+- **API Deployment:** The backend API for disease detection is deployed on [Render.com](https://render.com). The API endpoints are accessible through this mobile app.
 
 ## Screenshots
 
 ![Sign-up Page](screenshots/signup_page.jpg)
 ![Signup Confirmation](screenshots/signup_confirmation.jpg)
 ![Login Page](screenshots/login_page.jpg)
-![Main Page](screenshots/main_page.jpg)
-![Add Task](screenshots/add_task.jpg)
-![Change Password](screenshots/change_password.jpg)
-![Notification Page](screenshots/notification_page.jpg)
-![Profile and Settings](screenshots/profileandsetting.jpg)
-![Theme Mode](screenshots/theme_mode.jpg)
+![Navigation Dashboard](screenshots/navigation_dashboard.jpg)
+![Home Page](screenshots/home_page.jpg)
+![First Page](screenshots/first_page.jpg)
+![Image Upload](screenshots/image_upload.jpg)
+![Symptoms and Treatments](screenshots/symptomsandtreatments.jpg)
+![Feedback](screenshots/feedback.jpg)
+![Disease Identification](screenshots/disease_identification.jpg)
 
 ## Getting Started
 
@@ -45,8 +48,8 @@ To run this Flutter application, follow these steps:
 1. **Clone the Repository:**
 
     ```bash
-    git clone https://github.com/uditmahato/api_maize_plant_disease.git
-    cd api_maize_plant_disease
+    git clone https://github.com/[your-username]/[your-repo-name].git
+    cd [your-repo-name]
     ```
 
 2. **Firebase Configuration:**
@@ -88,7 +91,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 If you find this project useful, please consider giving it a star on GitHub to show your support.
 
-[![GitHub stars](https://img.shields.io/github/stars/uditmahato/api_maize_plant_disease.svg?style=social)](https://github.com/uditmahato/api_maize_plant_disease)
+[![GitHub stars](https://img.shields.io/github/stars/[your-username]/[your-repo-name].svg?style=social)](https://github.com/[your-username]/[your-repo-name])
 
 Your support is greatly appreciated!
 
